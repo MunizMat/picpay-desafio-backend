@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Enums;
 
 namespace Models;
 
@@ -23,7 +24,9 @@ public class UserModel
 
     public DateTime CreatedAt { get; set; }
 
-    public UserModel(string cpf, string fullName, string email, string password)
+    public UserType UserType { get; set; }
+
+    public UserModel(string cpf, string fullName, string email, string password, UserType userType)
     {
         Id = Guid.NewGuid();
         Cpf = cpf;
@@ -31,6 +34,7 @@ public class UserModel
         Email = email;
         Password = BCrypt.Net.BCrypt.HashPassword(password);
         CreatedAt = DateTime.UtcNow;
+        UserType = userType;
     }
 
 }
