@@ -5,6 +5,7 @@ namespace Models;
 
 public class UserModel
 {
+    [Key]
     public Guid Id { get; set; }
 
     [Required]
