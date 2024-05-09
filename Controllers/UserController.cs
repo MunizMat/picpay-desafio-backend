@@ -1,22 +1,37 @@
+using Contexts;
 using Microsoft.AspNetCore.Mvc;
+using Models;
 
 namespace Controllers;
 [ApiController]
 [Route("[controller]")]
 public class UserController : ControllerBase
 {
+    private readonly PostgreSqlContext _postgreSqlContext;
+
+    public UserController(PostgreSqlContext postgreSqlContext)
+    {
+        _postgreSqlContext = postgreSqlContext;
+    }
 
     [HttpGet]
-    public ActionResult<string> Get()
+    public ActionResult<List<UserModel>> Get()
     {
-        return "Hello";
+        return _postgreSqlContext.Users.ToList();
     }
 
     [HttpPost]
-    public ActionResult<string> Post([FromBody] string value)
+    public async Task<ActionResult<string>> Post([FromBody] UserModel user)
     {
-        Console.WriteLine(value);
-        return "Hello";
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        _postgreSqlContext.Users.Add(user);
+        await _postgreSqlContext.SaveChangesAsync();
+
+        return CreatedAtAction(nameof(Post), new { id = user.Id }, user);
     }
 
 }
