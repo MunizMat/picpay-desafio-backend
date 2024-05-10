@@ -2,6 +2,7 @@ using Contexts;
 using Dtos;
 using Microsoft.EntityFrameworkCore;
 using Models;
+using Services.External.Interfaces;
 using Services.Interfaces;
 
 namespace Services;
@@ -9,10 +10,12 @@ namespace Services;
 public class TransferService : ITransferService
 {
     private readonly PostgreSqlContext _postgreSqlContext;
+    private readonly ITransferAuthorizer _transferAuthorizer;
 
-    public TransferService(PostgreSqlContext postgreSqlContext)
+    public TransferService(PostgreSqlContext postgreSqlContext, ITransferAuthorizer transferAuthorizer)
     {
         _postgreSqlContext = postgreSqlContext;
+        _transferAuthorizer = transferAuthorizer;
     }
 
     public async Task<TransferDto> CreateTransferAsync(TransferModel transfer)
@@ -25,6 +28,15 @@ public class TransferService : ITransferService
 
         if (payer.AccountBalance < transfer.Amount)
             throw new ArgumentException("Insufficient account balance for this transfer");
+
+        try
+        {
+            await _transferAuthorizer.AuthorizeTransaction();
+        }
+        catch (HttpRequestException)
+        {
+            throw new InvalidOperationException("Failed to authorize your transaction");
+        }
 
         _postgreSqlContext.Transfers.Add(transfer);
         await _postgreSqlContext.SaveChangesAsync();
