@@ -8,4 +8,6 @@ public class UserDto
     public string Email { get; set; }
     public DateTime CreatedAt { get; set; }
     public string UserType { get; set; }
+
+    public decimal AccountBalance { get; set; }
 }

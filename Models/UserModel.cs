@@ -27,7 +27,9 @@ public class UserModel
 
     public UserType UserType { get; set; }
 
-    public UserModel(string cpf, string fullName, string email, string password, UserType userType)
+    public decimal AccountBalance { get; set; }
+
+    public UserModel(string cpf, string fullName, string email, string password, UserType userType, decimal accountBalance)
     {
         Id = Guid.NewGuid();
         Cpf = cpf;
@@ -36,6 +38,7 @@ public class UserModel
         Password = BCrypt.Net.BCrypt.HashPassword(password);
         CreatedAt = DateTime.UtcNow;
         UserType = userType;
+        AccountBalance = accountBalance;
     }
 
 }

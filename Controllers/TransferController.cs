@@ -36,10 +36,15 @@ public class TransferController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<string>> Post([FromBody] TransferModel transfer)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
+
+        var payer = await _postgreSqlContext.Users.FindAsync(transfer.PayerId);
+
+        if (payer is null) return BadRequest(ModelState);
+
+        if (payer.AccountBalance < transfer.Amount)
+            return BadRequest("Insufficient account balance for this amount");
 
         _postgreSqlContext.Transfers.Add(transfer);
         await _postgreSqlContext.SaveChangesAsync();
