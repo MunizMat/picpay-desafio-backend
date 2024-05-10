@@ -1,49 +1,35 @@
-using Contexts;
 using Microsoft.AspNetCore.Mvc;
 using Models;
 using Dtos;
-using Microsoft.EntityFrameworkCore;
+using Services.Interfaces;
 
 namespace Controllers;
 [ApiController]
 [Route("[controller]")]
 public class UserController : ControllerBase
 {
-    private readonly PostgreSqlContext _postgreSqlContext;
+    private readonly IUserService _userService;
 
-    public UserController(PostgreSqlContext postgreSqlContext)
+    public UserController(IUserService userService)
     {
-        _postgreSqlContext = postgreSqlContext;
+        _userService = userService;
     }
 
     [HttpGet]
     public async Task<ActionResult<List<UserDto>>> Get()
     {
-        var users = await _postgreSqlContext.Users
-            .Select(u => new UserDto
-            {
-                Id = u.Id,
-                Cpf = u.Cpf,
-                FullName = u.FullName,
-                Email = u.Email,
-                CreatedAt = u.CreatedAt,
-                UserType = u.UserType.ToString().ToLower()
-            })
-            .ToListAsync();
-
-        return users;
+        var result = await _userService.GetAllUsersAsync();
+        return result;
     }
 
     [HttpPost]
     public async Task<ActionResult<string>> Post([FromBody] UserModel user)
     {
         if (!ModelState.IsValid)
-        {
             return BadRequest(ModelState);
-        }
 
-        _postgreSqlContext.Users.Add(user);
-        await _postgreSqlContext.SaveChangesAsync();
+
+        await _userService.CreateUserAsync(user);
 
         return CreatedAtAction(nameof(Post), new { id = user.Id }, user);
     }

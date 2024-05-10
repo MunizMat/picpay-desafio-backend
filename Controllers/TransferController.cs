@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Contexts;
 using Dtos;
 using Models;
+using Services.Interfaces;
 
 namespace Controllers;
 
@@ -9,47 +10,37 @@ namespace Controllers;
 [Route("[controller]")]
 public class TransferController : ControllerBase
 {
-    private readonly PostgreSqlContext _postgreSqlContext;
+    private readonly ITransferService _transferService;
 
-    public TransferController(PostgreSqlContext postgreSqlContext)
+    public TransferController(ITransferService transferService)
     {
-        _postgreSqlContext = postgreSqlContext;
+        _transferService = transferService;
     }
 
     [HttpGet]
-    public List<TransferDto> Get()
+    public async Task<ActionResult<List<TransferDto>>> Get()
     {
-        var transfers = _postgreSqlContext.Transfers
-            .Select(t => new TransferDto
-            {
-                Amount = t.Amount,
-                CreatedAt = t.CreatedAt,
-                Id = t.Id,
-                PayeeId = t.PayeeId,
-                PayerId = t.PayerId
-            })
-            .ToList();
+        var transfers = await _transferService.GetAllTransfersAsync();
 
-        return transfers;
+        return Ok(transfers);
     }
 
     [HttpPost]
-    public async Task<ActionResult<string>> Post([FromBody] TransferModel transfer)
+    public async Task<ActionResult<TransferDto>> Post([FromBody] TransferModel transfer)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
 
-        var payer = await _postgreSqlContext.Users.FindAsync(transfer.PayerId);
+        try
+        {
+            var createdTransfer = await _transferService.CreateTransferAsync(transfer);
 
-        if (payer is null) return BadRequest(ModelState);
-
-        if (payer.AccountBalance < transfer.Amount)
-            return BadRequest("Insufficient account balance for this amount");
-
-        _postgreSqlContext.Transfers.Add(transfer);
-        await _postgreSqlContext.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(Post), new { id = transfer.Id }, transfer);
+            return CreatedAtAction(nameof(Post), createdTransfer);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
 }
