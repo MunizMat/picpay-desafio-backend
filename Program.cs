@@ -14,7 +14,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITransferService, TransferService>();
 builder.Services.AddHttpClient<ITransferAuthorizer, TransferAuthorizer>(client =>
 {
-    client.BaseAddress = new Uri("https://run.mocky.io/v3/50baec25-ae9b-44c0-931f-8b1419992a9e");
+    client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("TransferAuthorizerUri") ?? "");
 });
 
 builder.Services.AddDbContext<PostgreSqlContext>(options =>

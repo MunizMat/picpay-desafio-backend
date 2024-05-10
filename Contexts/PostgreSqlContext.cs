@@ -8,6 +8,7 @@ public class PostgreSqlContext(DbContextOptions options) : DbContext(options)
 {
     public DbSet<UserModel> Users { get; set; }
     public DbSet<TransferModel> Transfers { get; set; }
+    public DbSet<WalletModel> Wallets { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -25,13 +26,14 @@ public class PostgreSqlContext(DbContextOptions options) : DbContext(options)
             .HasDefaultValue(UserType.Common)
             .HasConversion<string>();
 
-        // Transfer
-        modelBuilder.Entity<TransferModel>()
-            .HasOne(t => t.Payer)
-            .WithMany()
-            .HasForeignKey(t => t.PayerId)
+        // Wallet
+        modelBuilder.Entity<WalletModel>()
+            .HasOne(t => t.Owner)
+            .WithOne()
+            .HasForeignKey<WalletModel>(t => t.OwnerId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        // Transfer
         modelBuilder.Entity<TransferModel>()
             .HasOne(t => t.Payee)
             .WithMany()
