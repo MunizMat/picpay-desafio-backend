@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("picpay-desafio-backend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+72769188f985587e9c333fa1ac451776d6e7c620")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+79050ff74b194fae2a80358744374097f9155f3f")]
 [assembly: System.Reflection.AssemblyProductAttribute("picpay-desafio-backend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("picpay-desafio-backend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
