@@ -1,5 +1,6 @@
-using Contexts;
 using Microsoft.AspNetCore.Mvc;
+using Contexts;
+using Dtos;
 using Models;
 
 namespace Controllers;
@@ -16,9 +17,18 @@ public class TransferController : ControllerBase
     }
 
     [HttpGet]
-    public List<TransferModel> Get()
+    public List<TransferDto> Get()
     {
-        var transfers = _postgreSqlContext.Transfers.ToList();
+        var transfers = _postgreSqlContext.Transfers
+            .Select(t => new TransferDto
+            {
+                Amount = t.Amount,
+                CreatedAt = t.CreatedAt,
+                Id = t.Id,
+                PayeeId = t.PayeeId,
+                PayerId = t.PayerId
+            })
+            .ToList();
 
         return transfers;
     }

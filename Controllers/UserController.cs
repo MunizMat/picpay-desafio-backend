@@ -1,6 +1,8 @@
 using Contexts;
 using Microsoft.AspNetCore.Mvc;
 using Models;
+using Dtos;
+using Microsoft.EntityFrameworkCore;
 
 namespace Controllers;
 [ApiController]
@@ -15,9 +17,21 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<List<UserModel>> Get()
+    public async Task<ActionResult<List<UserDto>>> Get()
     {
-        return _postgreSqlContext.Users.ToList();
+        var users = await _postgreSqlContext.Users
+            .Select(u => new UserDto
+            {
+                Id = u.Id,
+                Cpf = u.Cpf,
+                FullName = u.FullName,
+                Email = u.Email,
+                CreatedAt = u.CreatedAt,
+                UserType = u.UserType.ToString().ToLower()
+            })
+            .ToListAsync();
+
+        return users;
     }
 
     [HttpPost]
