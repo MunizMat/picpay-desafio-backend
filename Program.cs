@@ -4,6 +4,7 @@ using Services.Interfaces;
 using Services;
 using Services.External.Interfaces;
 using Services.External;
+using Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,5 +32,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.MapControllers();
+
+app.UseErrorHandler();
 
 app.Run();
