@@ -20,14 +20,16 @@ public class TransferService : ITransferService
 
     public async Task<TransferDto> CreateTransferAsync(TransferModel transfer)
     {
+        if (transfer.PayeeId == transfer.PayerId)
+            throw new ArgumentException("Transacton payer must be different from transaction payee");
 
-        var payer = await _postgreSqlContext.Users.FindAsync(transfer.PayerId);
+        var payerWallet = await _postgreSqlContext.Wallets.FirstAsync(w => w.UserId == transfer.PayerId);
 
-        if (payer is null)
+        if (payerWallet is null)
             throw new ArgumentException("Payer does not exist");
 
-        // if (payer.AccountBalance < transfer.Amount)
-        //     throw new ArgumentException("Insufficient account balance for this transfer");
+        if (payerWallet.Balance < transfer.Amount)
+            throw new ArgumentException("Insufficient balance for this transaction");
 
         try
         {
@@ -38,7 +40,11 @@ public class TransferService : ITransferService
             throw new InvalidOperationException("Failed to authorize your transaction");
         }
 
+        payerWallet.Balance -= transfer.Amount;
+        transfer.WalletId = payerWallet.Id;
+
         _postgreSqlContext.Transfers.Add(transfer);
+
         await _postgreSqlContext.SaveChangesAsync();
 
         return new TransferDto
@@ -47,7 +53,7 @@ public class TransferService : ITransferService
             CreatedAt = transfer.CreatedAt,
             Id = transfer.Id,
             PayeeId = transfer.PayeeId,
-            PayerId = transfer.PayerId
+            PayerId = transfer.PayerId,
         };
     }
 
