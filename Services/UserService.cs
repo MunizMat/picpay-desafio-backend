@@ -22,11 +22,9 @@ public class UserService : IUserService
 
         return new UserDto
         {
-            AccountBalance = 5000.0m,
-            Cpf = newUser.Cpf,
+            TaxIdentifier = newUser.TaxIdentifier,
             CreatedAt = newUser.CreatedAt,
             Email = newUser.Email,
-            FullName = newUser.FullName,
             Id = newUser.Id,
             UserType = newUser.UserType.ToString().ToLower()
         };
@@ -38,11 +36,11 @@ public class UserService : IUserService
         .Select(u => new UserDto
         {
             Id = u.Id,
-            Cpf = u.Cpf,
-            FullName = u.FullName,
+            TaxIdentifier = u.TaxIdentifier,
+            FirstName = u.FirstName,
+            LastName = u.LastName,
             Email = u.Email,
             CreatedAt = u.CreatedAt,
-            AccountBalance = u.AccountBalance,
             UserType = u.UserType.ToString().ToLower()
         }).ToListAsync();
 

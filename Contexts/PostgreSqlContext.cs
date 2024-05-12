@@ -14,7 +14,7 @@ public class PostgreSqlContext(DbContextOptions options) : DbContext(options)
     {
         // User
         modelBuilder.Entity<UserModel>()
-            .HasIndex(u => u.Cpf)
+            .HasIndex(u => u.TaxIdentifier)
             .IsUnique();
 
         modelBuilder.Entity<UserModel>()
@@ -28,9 +28,9 @@ public class PostgreSqlContext(DbContextOptions options) : DbContext(options)
 
         // Wallet
         modelBuilder.Entity<WalletModel>()
-            .HasOne(t => t.Owner)
+            .HasOne(t => t.User)
             .WithOne()
-            .HasForeignKey<WalletModel>(t => t.OwnerId)
+            .HasForeignKey<WalletModel>(t => t.UserId)
             .OnDelete(DeleteBehavior.Restrict);
 
         // Transfer
@@ -39,5 +39,9 @@ public class PostgreSqlContext(DbContextOptions options) : DbContext(options)
             .WithMany()
             .HasForeignKey(t => t.PayeeId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<TransferModel>()
+            .Property(t => t.WalletId)
+            .HasDefaultValue(Guid.Parse("6c44268a-6fc5-4084-baef-26bb1b773105"));
     }
 }

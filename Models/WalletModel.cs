@@ -11,20 +11,17 @@ public class WalletModel
 
     public DateTime CreatedAt { get; set; }
 
-    public DateTime UpdatedAt { get; set; }
-
     [Required]
-    public Guid OwnerId { get; set; }
+    public Guid UserId { get; set; }
 
-    public UserModel? Owner { get; set; }
+    public UserModel? User { get; set; }
 
-    public WalletModel(decimal balance, Guid ownerId)
+    public WalletModel(decimal balance, Guid userId)
     {
         Id = Guid.NewGuid();
         Balance = balance;
         CreatedAt = DateTime.UtcNow;
-        UpdatedAt = DateTime.UtcNow;
-        OwnerId = ownerId;
+        UserId = userId;
     }
 
 }

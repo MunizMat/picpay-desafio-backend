@@ -9,11 +9,15 @@ public class UserModel
     public Guid Id { get; set; }
 
     [Required]
-    public string Cpf { get; set; }
+    public string TaxIdentifier { get; set; }
 
     [Required]
-    [StringLength(100)]
-    public string FullName { get; set; }
+    [StringLength(60)]
+    public string FirstName { get; set; }
+
+    [Required]
+    [StringLength(60)]
+    public string LastName { get; set; }
 
     [Required]
     [EmailAddress]
@@ -29,11 +33,12 @@ public class UserModel
 
     public decimal AccountBalance { get; set; }
 
-    public UserModel(string cpf, string fullName, string email, string password, UserType userType, decimal accountBalance)
+    public UserModel(string taxIdentifier, string firstName, string lastName, string email, string password, UserType userType, decimal accountBalance)
     {
         Id = Guid.NewGuid();
-        Cpf = cpf;
-        FullName = fullName;
+        TaxIdentifier = taxIdentifier;
+        FirstName = firstName;
+        LastName = lastName;
         Email = email;
         Password = BCrypt.Net.BCrypt.HashPassword(password);
         CreatedAt = DateTime.UtcNow;
