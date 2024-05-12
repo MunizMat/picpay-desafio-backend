@@ -29,9 +29,9 @@ public class UserController : ControllerBase
             return BadRequest(ModelState);
 
 
-        await _userService.CreateUserAsync(user);
+        var newUser = await _userService.CreateUserAsync(user);
 
-        return CreatedAtAction(nameof(Post), new { id = user.Id }, user);
+        return CreatedAtAction(nameof(Post), newUser);
     }
 
 }

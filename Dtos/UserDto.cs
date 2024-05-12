@@ -1,6 +1,6 @@
 namespace Dtos;
 
-public record UserDto
+public class UserDto
 {
     public Guid Id { get; set; }
     public string TaxIdentifier { get; set; }

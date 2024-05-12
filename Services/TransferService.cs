@@ -26,8 +26,8 @@ public class TransferService : ITransferService
         if (payer is null)
             throw new ArgumentException("Payer does not exist");
 
-        if (payer.AccountBalance < transfer.Amount)
-            throw new ArgumentException("Insufficient account balance for this transfer");
+        // if (payer.AccountBalance < transfer.Amount)
+        //     throw new ArgumentException("Insufficient account balance for this transfer");
 
         try
         {

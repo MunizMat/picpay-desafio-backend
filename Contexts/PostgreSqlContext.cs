@@ -31,7 +31,7 @@ public class PostgreSqlContext(DbContextOptions options) : DbContext(options)
             .HasOne(t => t.User)
             .WithOne()
             .HasForeignKey<WalletModel>(t => t.UserId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
 
         // Transfer
         modelBuilder.Entity<TransferModel>()

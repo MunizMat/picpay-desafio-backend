@@ -1,5 +1,6 @@
 using Contexts;
 using Dtos;
+using Enums;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using Services.Interfaces;
@@ -17,7 +18,11 @@ public class UserService : IUserService
 
     public async Task<UserDto> CreateUserAsync(UserModel newUser)
     {
+        var wallet = new WalletModel(5000.0m, newUser.Id);
+
         _postgreSqlContext.Users.Add(newUser);
+        _postgreSqlContext.Wallets.Add(wallet);
+
         await _postgreSqlContext.SaveChangesAsync();
 
         return new UserDto
@@ -25,6 +30,8 @@ public class UserService : IUserService
             TaxIdentifier = newUser.TaxIdentifier,
             CreatedAt = newUser.CreatedAt,
             Email = newUser.Email,
+            FirstName = newUser.FirstName,
+            LastName = newUser.LastName,
             Id = newUser.Id,
             UserType = newUser.UserType.ToString().ToLower()
         };
