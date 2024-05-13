@@ -19,14 +19,15 @@ public class UserController : ControllerBase
     public async Task<ActionResult<List<UserDto>>> Get()
     {
         var result = await _userService.GetAllUsersAsync();
-        return result;
+
+        return Ok(result);
     }
 
     [HttpPost]
     public async Task<ActionResult<string>> Post([FromBody] UserModel user)
     {
         if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+            throw new ArgumentException("Invalid body");
 
 
         var newUser = await _userService.CreateUserAsync(user);

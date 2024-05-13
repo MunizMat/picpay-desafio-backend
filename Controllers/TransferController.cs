@@ -22,25 +22,19 @@ public class TransferController : ControllerBase
     {
         var transfers = await _transferService.GetAllTransfersAsync();
 
-        return Ok(transfers);
+        return transfers;
     }
 
     [HttpPost]
     public async Task<ActionResult<TransferDto>> Post([FromBody] TransferModel transfer)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
+        if (!ModelState.IsValid) throw new ArgumentException("Invalid body");
 
 
-        try
-        {
-            var createdTransfer = await _transferService.CreateTransferAsync(transfer);
+        var createdTransfer = await _transferService.CreateTransferAsync(transfer);
 
-            return CreatedAtAction(nameof(Post), createdTransfer);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        return CreatedAtAction(nameof(Post), createdTransfer);
+
     }
 
 }

@@ -21,23 +21,23 @@ public class TransferService : ITransferService
     public async Task<TransferDto> CreateTransferAsync(TransferModel transfer)
     {
         if (transfer.PayeeId == transfer.PayerId)
-            throw new ArgumentException("Transacton payer must be different from transaction payee");
+            throw new ArgumentException("Transaction payer cannot be equal to payee");
 
         var payerWallet = await _postgreSqlContext.Wallets.FirstAsync(w => w.UserId == transfer.PayerId);
 
         if (payerWallet is null)
-            throw new ArgumentException("Payer does not exist");
+            throw new ArgumentNullException("Payer does not exist");
 
         if (payerWallet.Balance < transfer.Amount)
-            throw new ArgumentException("Insufficient balance for this transaction");
+            throw new ArgumentException("Insufficient account balance");
 
         try
         {
             await _transferAuthorizer.AuthorizeTransaction();
         }
-        catch (HttpRequestException)
+        catch (HttpRequestException ex)
         {
-            throw new InvalidOperationException("Failed to authorize your transaction");
+            throw new Exception("Failed to authorize transaction", ex);
         }
 
         payerWallet.Balance -= transfer.Amount;
