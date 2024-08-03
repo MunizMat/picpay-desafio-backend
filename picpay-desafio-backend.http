@@ -1,6 +1,0 @@
-@picpay_desafio_backend_HostAddress = http://localhost:5225
-
-GET {{picpay_desafio_backend_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
