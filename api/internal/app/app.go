@@ -15,6 +15,7 @@ func Run() {
 	app := gin.Default()
 
 	app.Use(CorsMiddleware())
+	app.Use(ErrorHandler)
 
 	userRouter := app.Group("/users")
 
