@@ -1,11 +1,24 @@
 package app
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/MunizMat/picpay-desafio-backend/api/internal/clients"
+	"github.com/MunizMat/picpay-desafio-backend/api/internal/configs"
+	user "github.com/MunizMat/picpay-desafio-backend/api/internal/modules/users"
+	"github.com/gin-gonic/gin"
+)
 
 func Run() {
-	router := gin.Default()
+	configs.ParseEnvsOrPanic()
 
-	router.GET("/auth")
-	router.POST("/auth")
-	router.POST("/transfer")
+	clients.Init()
+
+	app := gin.Default()
+
+	app.Use(CorsMiddleware())
+
+	userRouter := app.Group("/users")
+
+	userRouter.POST("/", user.Post)
+
+	app.Run(":3000")
 }
