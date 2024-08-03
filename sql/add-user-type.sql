@@ -1,0 +1,1 @@
+ALTER TABLE users ADD type VARCHAR(50) NOT NULL DEFAULT 'common'
