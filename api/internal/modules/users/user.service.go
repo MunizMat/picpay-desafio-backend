@@ -1,5 +1,7 @@
 package user
 
+import "github.com/MunizMat/picpay-desafio-backend/api/internal/modules/wallets"
+
 func CreateUser(user *UserModel) error {
 	hashedPassword, err := HashPassword(user.Password)
 
@@ -12,4 +14,10 @@ func CreateUser(user *UserModel) error {
 	err = SaveUser(user)
 
 	return err
+}
+
+func GetWallet(userId int) *wallets.WalletModel {
+	wallet := wallets.FindByUserId(userId)
+
+	return wallet
 }

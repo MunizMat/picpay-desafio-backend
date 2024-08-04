@@ -1,17 +1,37 @@
 package transfers
 
 import (
-	"errors"
 	"net/http"
 
+	user "github.com/MunizMat/picpay-desafio-backend/api/internal/modules/users"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
-func Post(context *gin.Context) {
-	userType, _ := context.Get("userType")
+type PostInput struct {
+	Value float64 `json:"value" binding:"required"`
+	Payer int     `json:"payer" binding:"required"`
+	Payee int     `json:"payee" binding:"required"`
+}
 
-	if userType != "common" {
-		context.AbortWithError(http.StatusForbidden, errors.New("you are not allowed to perform this operation"))
+func Post(context *gin.Context) {
+	var body PostInput
+
+	err := context.ShouldBindWith(&body, binding.JSON)
+
+	if err != nil {
+		context.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	userId, _ := context.Get("userId")
+
+	payerWallet := user.GetWallet(int(userId.(int)))
+
+	err = ValidateTransfer(payerWallet, body.Value)
+
+	if err != nil {
+		context.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
