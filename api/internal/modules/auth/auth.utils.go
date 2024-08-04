@@ -39,11 +39,12 @@ func HandleBasicAuth(authHeader string) (Credentials, error) {
 func CreateToken(claims jwt.MapClaims) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	tokenString, err := token.SignedString(configs.Environment.JWT_SECRET)
+	tokenString, err := token.SignedString([]byte(configs.Environment.JWT_SECRET))
 
 	if err != nil {
 		return "", err
 	}
 
+	fmt.Println(tokenString)
 	return tokenString, nil
 }

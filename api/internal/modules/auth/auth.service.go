@@ -23,17 +23,17 @@ func GetToken(credentials Credentials) (string, error) {
 	}
 
 	claims := jwt.MapClaims{
-		"authorized": true,
-		"userId":     user.Id,
-		"email":      user.Email,
-		"type":       user.Type,
-		"exp":        time.Now().Add(time.Hour * 24).Unix(),
+		"full_name": user.FullName,
+		"userId":    user.Id,
+		"email":     user.Email,
+		"type":      user.Type,
+		"exp":       time.Now().Add(time.Hour * 24).Unix(),
 	}
 
 	token, err := CreateToken(claims)
 
 	if err != nil {
-		return "", nil
+		return "", err
 	}
 
 	return token, nil
