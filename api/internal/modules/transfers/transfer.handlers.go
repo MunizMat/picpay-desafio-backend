@@ -8,27 +8,26 @@ import (
 	"github.com/gin-gonic/gin/binding"
 )
 
-type PostInput struct {
-	Value float64 `json:"value" binding:"required"`
-	Payer int     `json:"payer" binding:"required"`
-	Payee int     `json:"payee" binding:"required"`
-}
-
 func Post(context *gin.Context) {
-	var body PostInput
+	var transfer TransferModel
 
-	err := context.ShouldBindWith(&body, binding.JSON)
+	err := context.ShouldBindWith(&transfer, binding.JSON)
 
 	if err != nil {
 		context.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	userId, _ := context.Get("userId")
+	payerWallet := user.GetWallet(transfer.PayerId)
 
-	payerWallet := user.GetWallet(int(userId.(int)))
+	err = ValidateTransfer(payerWallet, transfer.Value)
 
-	err = ValidateTransfer(payerWallet, body.Value)
+	if err != nil {
+		context.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	err = CompleteTransfer(&transfer)
 
 	if err != nil {
 		context.AbortWithError(http.StatusBadRequest, err)

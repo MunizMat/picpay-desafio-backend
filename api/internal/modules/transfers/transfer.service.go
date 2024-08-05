@@ -25,4 +25,8 @@ func ValidateTransfer(wallet *wallets.WalletModel, transferAmount float64) error
 	return nil
 }
 
-func CompleteTransfer() {}
+func CompleteTransfer(transfer *TransferModel) error {
+	err := SaveTransfer(transfer)
+
+	return err
+}

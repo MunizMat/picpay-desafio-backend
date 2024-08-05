@@ -5,11 +5,34 @@ import (
 )
 
 func SaveUser(user *UserModel) error {
-	query := "INSERT INTO users (cpf, email, full_name, password, type) VALUES ($1, $2, $3, $4, $5)"
+	transaction, err := clients.Postgresql.Begin()
 
-	_, err := clients.Postgresql.Exec(query, user.Cpf, user.Email, user.FullName, user.Password, user.Type)
+	if err != nil {
+		return err
+	}
+
+	query := "INSERT INTO users (cpf, email, full_name, password, type) VALUES ($1, $2, $3, $4, $5) RETURNING id"
+
+	err = transaction.QueryRow(query, user.Cpf, user.Email, user.FullName, user.Password, user.Type).Scan(&user.Id)
+
+	if err != nil {
+		transaction.Rollback()
+		return err
+	}
+
+	query = "INSERT INTO wallets (balance, user_id) VALUES ($1, $2)"
+
+	_, err = transaction.Exec(query, 500, user.Id)
+
+	if err != nil {
+		transaction.Rollback()
+		return err
+	}
+
+	err = transaction.Commit()
 
 	return err
+
 }
 
 func FindByEmail(email string) *UserModel {
